@@ -4,7 +4,9 @@ from typing import Dict
 from RateLimitResult import RateLimitResult
 from Limiter import Limiter
 
-
+# this uses a queue, FIFO.
+# the log is used to look at the previous timestamps. the remaining time is calacuted on the bases of the oldest timestamp in the queue. 
+# if the queue is full, then we can calculate the remaining time by looking at the oldest timestamp and subtracting it from the current time.
 class SlidingWindowLogLimiter(Limiter):
     def __init__(self, max_requests: int, window_ms: int):
         self._max_requests = max_requests

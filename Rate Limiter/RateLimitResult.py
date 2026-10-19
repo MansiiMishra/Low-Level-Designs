@@ -8,6 +8,8 @@ class RateLimitResult:
     remaining: int
     retry_after_ms: Optional[int]
 
+    # no additional cuntionaly, only takes the values from the limiter algorithm and returns it to the RateLimiter class.
+
     def is_allowed(self) -> bool:
         return self.allowed
 

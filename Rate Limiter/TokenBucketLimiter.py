@@ -10,6 +10,13 @@ class TokenBucketLimiter(Limiter):
         self._buckets: Dict[str, TokenBucket] = {}
 
     def allow(self, key: str):
+
+    # This uses a token counter for each client.
+    # Tokens are refilled at a fixed rate, up to the maximum capacity.
+    # Each allowed request consumes one token.
+    # If there are no tokens available, the request is rejected.
+    # The retry time is calculated based on how long it takes to refill one token.
+
         bucket = self._get_or_create_bucket(key)
 
         now = int(time.time() * 1000)
