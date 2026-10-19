@@ -1,0 +1,58 @@
+# Problem statement:
+The rate limiter controls how many requests can be sent to the backend service in a span of time
+If the number of request breaches the limit then they should be rejected. 
+
+# Requirements:
+The RL receives the rule config from external service per endpoint
+The RL should be able to check the limit and allow or reject
+The RL should be able to reject with 429 HTTP response when limit is breached
+
+# example endpoint input:
+The token bucket allows to refil n number of tokens after t time
+so bucket size is 1000 and refills 10 token/second
+{
+  "endpoint": "/search",
+  "algorithm": "TokenBucket",
+  "algoConfig": {
+    "capacity": 1000,
+    "refillRatePerSecond": 10
+  }
+}
+
+# Questions:
+1. Does the parameters within the algorithm differ? --> Yes, algoConfig will exists, parameters maybe different.
+2. When the request comes in, what info do we receive? --> Clientid and Endpoint
+3. What should be the return values? --> allowed or not, what is remaining quota, when is next retry?
+4. What if request comes from a endpoint we do not have the config for? --> default config, do not reject.
+5. what is the scope? single server? distributed server? --> single server, in memory
+
+# Final Requirements:
+1. Configuration is provided at startup (loaded once)
+2. System receives requests with (clientId: string, endpoint: string)
+3. Each endpoint has a configuration specifying:
+   - Algorithm to use (e.g., "TokenBucket", "SlidingWindowLog", etc.)
+   - Algorithm-specific parameters (e.g., capacity, refillRatePerSecond for Token Bucket)
+4. System enforces rate limits by checking clientId against the endpoint's configuration
+5. Return structured result: (allowed: boolean, remaining: int, retryAfterMs: long | null)
+6. If endpoint has no configuration, use a default limit
+
+# Out of scope:
+- Distributed rate limiting (Redis, coordination)
+- Dynamic configuration updates
+- Metrics and monitoring
+- Config validation beyond basic checks
+
+# Core Entities
+Request - Comes to our system so no need to model it
+Client - Client only provides client id, no need to model
+Endpoint - This is only the data that we consume, no need to model it
+Rate Limiting Algo - Each algo will have its own config, which needs to be mainatined, at the same time if the algo is unknown then we need to also return default, so we will maintain
+RateLimiter: This will be our orchestrator, request arrives, something to lookup the endpointconfig, give algo instance, delegate
+RateLimitResult: return 3 peices - allowed/notallowed, current remaining limit, next retry time on failure
+
+# final entities: Rate Limiter, Rate limit Algo(Interface), RateLimitResult
+
+# Relationship: 
+Rate limiter maps the algo to the rate limit algo interface
+Rate limiter delegates the limit check to the rate limit aglo
+the rate limit algo send results to ratelimitresult to strcuture

@@ -1,0 +1,45 @@
+# Basic Requirement
+when a vehicle comes in, a ticket should be generated and the car should be assigned a parkign slot
+When the vehicle leaves, the vehicle should be charged on the basis of time spent and the assigned slot should be freed up
+
+# Questions:
+1. Is the slot assignment automatic? --> Yes
+2. which types of vehicles are supported? --> 3 types - motorcyles, small cra, large cars
+3. is the fees same for all vehicles or different? --> hourly rate, same for all vehicles, round up to nearest hour, pay when they leave
+4. What happens when the slots are full and someone tries to enter? --> reject entry
+5. What if someone tries to exit without a valid ticket? --> return an error
+6. are we to consider payment proocessing, entrace gates, cameras etc? --> no focus on simple stuff
+
+# Final requirements
+1. System supports three vehicles motocyles, car, large vehicles
+2. When a vehicle enter:
+    - system automatically assigns avaialble spot
+    - system will issue a ticket with unique id
+4. when vehicles exits:
+    - system validates the ticket
+    - calculates fee based on time and then rounds up
+    - frees up the slot
+5. pricing is hourly basis
+6. system rejects entry is not slots available
+7. system rejects exit if ticket is invalid or already used
+
+# out of scope:
+- payment processing
+- physical gate hardware
+- Securty camres or mointoring
+- UI/Display systems
+- Reservations or pre-booking
+
+# Core Entities:
+1. Vehicles: enum, since we only need to know its type and nothing else -- Can be skipped
+2. ParkingSpot: This will have a unique ID, and a state
+3. Ticket: uniqueid, timestamp of issue, type of vehicle assigned
+4. ParkingLot: orchestrates the whole system
+
+# Relatiosn between core entities
+- ParkingLot oowns collections of ParkingSpots
+- ParkingLot creates Tickets when vehicle enters
+- ParkingLot tracks active tickets so it can validate during the exit
+
+
+
