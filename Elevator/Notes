@@ -1,0 +1,35 @@
+# Problem Statement
+Elevator system has multiple elevators. When someone requests an elevator, the system decides which one to dispatch. Once inside passenegers select their destination. The movement of the elevetors should be efficently handled while handling multiple concurrent requests
+
+# Questions
+How many elevators and floors are we dealing with? -- 3 elevators and 10 floors
+The hall call is simple up/down or also floors? -- Simple Up down
+Should we consider single destination or multiple? -- Multiple Destination
+Should we distinguish between types of stops? floor call stop vs destination stop? -- Yes hall calls have direction, destination does not. 
+Should we consider using something like a step() function for simulation or real interagble elevator system -- Simulation model
+
+# Requirements:
+1. System manages 3 elevators serving 10 floors (0-9)
+2. Users can request an elevator from any floor (hall call). System decides which elevator to dispatch.
+3. Once inside, users can select one or more destination floors
+4. Simulation runs in discrete time steps (e.g., a `step()` or `tick()` call advances time)
+5. Elevator stops come in two types:
+    - Hall calls: Request from a floor with direction (UP or DOWN)
+    - Destination: Request from inside elevator (no direction specified)
+6. System handles multiple concurrent pickup requests across floors
+7. Invalid requests should be rejected (return false)
+    - Non-existent floor numbers
+8. Requests for the current floor are treated as a no-op / already served (doors out of scope)
+
+Out of scope:
+- Weight capacity and passenger limits
+- Door open/close mechanics
+- Emergency stop functionality
+- Dynamic floor/elevator configuration
+- UI/rendering layer
+
+# Core Entities
+1. ElevatorController - Orchestrator
+2. floors - int, not a class
+3. Request - TBD
+4. Elevator - Maintains state of current floor, direction, destination and rules. 
