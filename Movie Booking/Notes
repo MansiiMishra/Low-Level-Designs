@@ -1,0 +1,53 @@
+# Problem statement
+Design Bookmyshow like system. It should allow users to search for movies, browse theaters and showtimes. 
+Select seats from the seatmap and reserve tickets.
+The system should manage seat availablity across multiple theaters each with multipe screens and prevents two people from booking the same seat.
+
+# Questions:
+- Are seat auto assigned or user selected? --> User selected, can have more than one seat selected in a single transaction.
+- How many theaters and screens are we considering? --> Multiple theaters, each with multiple screens.
+- Do different seats have different configurations? --> no, all seats are the same configuration. A-Z 0-20
+- What does manage booking mean? --> Only hanlde the cancalltion.
+- is seat price diffferent for different seats? --> No, all seats have the same price.
+- concurrency? --> Yes, the system should handle concurrent bookings for the same seat.
+
+Requirements:
+1. Users can search for movies by title
+2. Users can browse movies playing at a given theater
+3. Theaters have multiple screens; all screens share the same seat layout (rows A-Z, seats 0-20)
+4. Users can view available seats for a showtime and select specific ones
+5. Users can book multiple seats in a single reservation; booking returns a confirmation ID
+6. Concurrent booking of the same seat: exactly one succeeds
+7. Users can cancel a reservation by confirmation ID, releasing the seats
+
+Out of Scope:
+- Payment processing (assume payment always succeeds)
+- Variable seat layouts or seat types (all seats identical)
+- Rescheduling (cancel and rebook instead)
+- UI / rendering
+
+# Core Entities
+- Theater: The location that would handle all shows within it.
+- Movie: Movies hold the timing of shows in the theater
+- Showtime: A specific screening. Tracks per-seat availability and handles booking concurrency.
+- Reservations: comfirmed id, which can be used for camcellation further
+- BookingSystem: Entry point. The orchestrator.
+
+# not an entity:
+- seat: just a string.
+- Screen: Since every threater would have same layout, no use to have a different class for this
+
+# Relations:
+BookingSystem → List<Theater>
+Theater → List<Showtime>
+Showtime → Theater (back-reference for navigation)
+Showtime → Movie (reference)
+Showtime → List<Reservation> (booking records for this showtime)
+Reservation → Showtime (back-reference for cancellation routing)
+Reservation → List<string> (e.g., ["A5", "A6"])
+
+# Design Summary:
+Five classes, one constant. Notice the clean separation of responsibilities:
+1. BookingSystem is a pure orchestrator. It holds theaters, provides cross-theater queries (search, browse), and routes booking and cancellation requests.
+2. Showtime owns both seat state and reservations. Booking and cancellation are atomic operations on a single object, so there's no cross-object consistency to maintain.
+3. Reservation is a data record with a back-reference to its Showtime for routing cancellations. BookingSystem creates it, Showtime stores it.
