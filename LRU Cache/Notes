@@ -1,0 +1,42 @@
+# LRU Cache
+least recently used Cache
+
+GET and PUT operations should be supported.
+We will use the hashmap to track the key value. 
+
+# Funtionality of GET:
+The values of the DLL will be added to the hashmap (index, refernece to the value)
+Everytime we get a value, it should be added to the head to note that the node was recently used. pushing back all other nodes towards the tail.
+
+
+# Fuunctionaility of PUT:
+Case 1: Value already exists
+1. Check is the value already exits in the DLL. If yes then update the value in the dll as well as the hashmap refernece to the value
+2. Then again, add this node to the start to mark as recently used, poushing all other towards the tail.
+
+Case 2: Value does not exits
+1. check capacity, less adequent, then add to add the new node and also update the hashmap
+2. If not adequent capacity then remove the least recently used value from the cache dll tail
+3. then add the node to the head and also update the hashmap
+
+
+# Summarize:
+# GET:
+Fetch value from HashMap
+move the node to head
+
+# PUT:
+case1: old entry updated
+update the node value in dll
+move the node to head
+update the value refernece in the hashmap
+
+case2: New entry
+case a: capacity adequent:
+1. add the new noe to the head
+2. add the referenece to the value in the hashMap
+
+caseb: no adequent capacity
+1. remove one node from the tai - least recently used
+2. add the new node to the head
+3. add the refernence to the value in the hashmap
